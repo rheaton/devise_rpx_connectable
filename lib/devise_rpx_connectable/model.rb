@@ -14,7 +14,7 @@ module Devise #:nodoc:
     #
     # +rpx_identifier_field+ - Defines the name of the RPX identifier database attribute/column.
     #
-    # +rpx_auto_create_account+ - Speifies if account should automatically be created upon connect
+    # +rpx_auto_create_account+ - Specifies if account should automatically be created upon connect
     #                                 if not already exists.
     #
     # == Examples:
@@ -44,8 +44,8 @@ module Devise #:nodoc:
         # Lazy hack: These database fields are required if +authenticable+/+confirmable+
         # module(s) is used. Could be avoided with :null => true for authenticatable
         # migration, but keeping this to avoid unnecessary problems.
-        self.password_salt = '' if self.respond_to?(:password_salt)
-        self.encrypted_password = '' if self.respond_to?(:encrypted_password)
+        self.password_salt = '' if self.respond_to?(:password_salt) && password_salt.nil?
+        self.encrypted_password = '' if self.respond_to?(:encrypted_password) && encrypted_password.nil?
       end
 
       # Checks if RPX connected.
