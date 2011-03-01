@@ -113,7 +113,7 @@ describe 'DeviseRpxConnectable' do
         it "should create a new user and success if rpx_auto_create_account" do
           User.should_receive(:"rpx_auto_create_account?").and_return(true)
           User.should_receive(:new).and_return(@user)
-          @user.should_receive(:"store_rpx_credentials!").with(RPX_USER_DATA).and_return(true)
+          @user.should_receive(:"store_rpx_credentials!").with({:identifier => RPX_USER_DATA["identifier"], :email => nil}).and_return(true)
           @user.should_receive(:on_before_rpx_auto_create).with(RPX_USER_DATA).and_return(true)
           @user.should_receive(:save).with({ :validate => false }).and_return(true)
           @user.should_receive(:on_before_rpx_success).with(RPX_USER_DATA).and_return(true)

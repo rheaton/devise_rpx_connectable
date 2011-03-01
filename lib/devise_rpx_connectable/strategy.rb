@@ -42,7 +42,7 @@ module Devise #:nodoc:
             fail!(:rpx_invalid) and return unless klass.rpx_auto_create_account?
 
             user = klass.new
-            user.store_rpx_credentials!(rpx_user)
+            user.store_rpx_credentials!(:email => verified_email || rpx_user["email"], :identifier => identifier)
             user.on_before_rpx_auto_create(rpx_user)
 
             user.save(:validate => false)
