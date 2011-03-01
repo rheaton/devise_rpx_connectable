@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-Devise.setup do |config|
-  config.rpx_identifier_field = :rpx_identifier
-  config.rpx_auto_create_account = true
-end
-
 describe Devise::Models::RpxConnectable do
+  Devise.setup do |config|
+    config.rpx_identifier_field = :rpx_identifier
+    config.rpx_auto_create_account = true
+  end
+
   before do
     User.rpx_identifier_field.should == :rpx_identifier
   end
@@ -71,9 +71,27 @@ describe Devise::Models::RpxConnectable do
         end
       end
 
+      context "when primary key is sent" do
+        it "returns the user with the primary key" do
+          user = User.new(:email => "mail2@example.com")
+          user.save(:validate => false)
+
+          User.authenticate_with_rpx(:identifier => "foo", :primaryKey => user.id).should == user
+        end
+      end
+
+      context "when email and identifier is sent" do
+        it "returns the user with the verfied email" do
+          user = User.new(:email => "mail3@example.com")
+          user.save(:validate => false)
+
+          User.authenticate_with_rpx(:identifier => "bar", :verifiedEmail => user.email).should == user
+        end
+      end
+
       context "when no identifier is sent" do
         it "returns nothing" do
-          user = User.new(:email => "mail2@example.com")
+          user = User.new(:email => "mail4@example.com")
           user.rpx_identifier = "1facebook"
           user.save(:validate => false)
 

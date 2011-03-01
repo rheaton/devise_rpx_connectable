@@ -79,7 +79,7 @@ module Devise #:nodoc:
       def on_before_rpx_success(rpx_user)
         self.send(:before_rpx_success, rpx_user) if self.respond_to?(:before_rpx_success)
       end
-      
+
       # Hook that gets called before the auto creation of the user.
       # Therefore, this hook is only called when rpx_auto_create_account config option is enabled.
       # Useful for fetching additional user info (etc.) from RPX.
@@ -122,7 +122,8 @@ module Devise #:nodoc:
           :rpx_identifier_field,
           :rpx_auto_create_account,
           :rpx_extended_user_data,
-          :rpx_additional_user_data
+          :rpx_additional_user_data,
+          :rpx_use_mapping
         )
 
         # Alias don't work for some reason, so...a more Ruby-ish alias
@@ -135,9 +136,16 @@ module Devise #:nodoc:
         # Authenticate a user based on RPX Identifier.
         #
         def authenticate_with_rpx(attributes = {})
-          if attributes[:identifier].present?
-            self.find_for_rpx(attributes[:identifier])
+          user = nil
+          if attributes[:primaryKey].present?
+            user = self.find_by_id(attributes[:primaryKey])
+          elsif attributes[:identifier].present?
+            user = self.find_for_rpx(attributes[:identifier])
+            #this could potentially allow unverified email account access, but if they
+            # verified with the 3rd party, who cares?
+            user = self.find_by_email(attributes[:verifiedEmail]) if user.blank? && attributes[:verifiedEmail]
           end
+          user
         end
 
         protected

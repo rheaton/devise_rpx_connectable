@@ -22,9 +22,20 @@ module Devise #:nodoc:
             rpx_user = (RPXNow.user_data(params[:token], :extended => klass.rpx_extended_user_data, :additional => klass.rpx_additional_user_data) rescue nil)
             fail!(:rpx_invalid) and return unless rpx_user
 
-            if user = klass.authenticate_with_rpx(:identifier => rpx_user["identifier"])
+            identifier = rpx_user["identifier"]
+            primary_key = rpx_user["primaryKey"]
+            verified_email = rpx_user["verifiedEmail"]
+
+            user_data = {:identifier => identifier}
+            if Devise.rpx_use_mapping
+              user_data.merge!(:verifiedEmail => verified_email) if verified_email.present?
+              user_data.merge!(:primaryKey => primary_key) if primary_key.present?
+            end
+
+            if user = klass.authenticate_with_rpx(user_data)
               user.on_before_rpx_success(rpx_user)
               success!(user)
+              map_identifier(user, identifier) unless primary_key
               return
             end
 
@@ -36,6 +47,7 @@ module Devise #:nodoc:
 
             user.save(:validate => false)
             user.on_before_rpx_success(rpx_user)
+            map_identifier(user, identifier)
             success!(user)
 
           rescue
@@ -52,6 +64,10 @@ module Devise #:nodoc:
           params[:token].present?
         end
 
+        private
+        def map_identifier(user, identifier)
+          RPXNow.map(identifier, user.id) if Devise.rpx_use_mapping
+        end
       end
     end
   end
