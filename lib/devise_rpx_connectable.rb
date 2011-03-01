@@ -16,18 +16,21 @@ require 'devise_rpx_connectable/view_helpers'
 module Devise
   mattr_accessor :rpx_identifier_field
   @@rpx_identifier_field = :rpx_identifier
-  
+
   mattr_accessor :rpx_auto_create_account
   @@rpx_auto_create_account = true
-  
+
   mattr_accessor :rpx_extended_user_data
   @@rpx_extended_user_data = true
-  
-  mattr_accessor :rpx_additional_user_data	
+
+  mattr_accessor :rpx_additional_user_data
   @@rpx_additional_user_data = []
-  
+
   mattr_accessor :rpx_application_name
   @@rpx_application_name = nil
+
+  mattr_accessor :rpx_use_mapping
+  @@rpx_use_mapping = false
 end
 
 I18n.load_path.unshift File.join(File.dirname(__FILE__), *%w[devise_rpx_connectable locales en.yml])
